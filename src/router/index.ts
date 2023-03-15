@@ -7,11 +7,13 @@ export default async function (fastify: any, opts: any, done: any) {
 
   for (let fileNameWithExt of routeNames) {
     const fileName = Path.parse(fileNameWithExt).name
-    if (fileName.toLowerCase() == "index") continue
-      
+    if (fileName.toLowerCase() == "index") continue;
+
     const { default: file } = await import(Path.join(__dirname, fileName))
-    await fastify.register(file.router, { prefix: file.prefix })
+    if (file.router && file.prefix) {
+      await fastify.register(file.router, { prefix: file.prefix });
+    }
   }
 
-  await done()
+  await done();
 }
